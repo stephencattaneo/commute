@@ -3,9 +3,10 @@
   <script src='app.js'></script>
 </head>
 <body>
+  <div id="display"></div>
   <script>
     var a = new app();
-    a.run();
+    a.run(document.querySelector('#display'));
   </script>
 </body>
 </html>

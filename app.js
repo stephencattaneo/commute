@@ -14,7 +14,7 @@ app.prototype.second_leg = '';
 app.prototype.now = null;
 app.prototype.leg_pointers = {};
 
-app.prototype.run = function () {
+app.prototype.run = function (display_div) {
   this.now = new Date();
   var noon = (new Date()).setHours(12);
   var direction, first_leg, second_leg;
@@ -29,17 +29,17 @@ app.prototype.run = function () {
   }
 
   var first_leg_options = [];
-  var second_leg_options = {};
+  var second_leg_options = [];
   for (var i=0; i < 2; i++) {
     var option = this.getNextEarliestPosition(this.now, this.first_leg);
     if (! option) break;
     first_leg_options.push(option);
 
     var end = this.getEnd('first_leg');
-    second_leg_options[option[end]] = this.getNextEarliestPosition(option[end], this.second_leg);
+    second_leg_options.push(this.getNextEarliestPosition(option[end], this.second_leg));
   }
 
-  this.display(first_leg_options, second_leg_options);
+  this.display(first_leg_options, second_leg_options, display_div);
 };
 
 
@@ -47,11 +47,40 @@ app.prototype.run = function () {
  * @param {Array.<Ojbect>} first_leg_options The next couple options for the 
  *  first leg of the commute
  * @param {Array.<Object>} second_leg_options Based on the first leg options
+ * @param {Node} display_div The div to render into.
  */
-app.prototype.display = function(first_leg_options, second_leg_options) {
-  console.log('display');
+app.prototype.display = function(first_leg_options, second_leg_options, display_div) {
+  var len = first_leg_options.length;
+  var out = [];
+
+  var tmpl1 = '<div>Bart</div>\n<div>Leave: ';
+  var tmpl2 = '</div>\n<div>Arrive: ';
+  var tmpl3 = '</div>\n<div>VTA</div>\n<div>Leave: ';
+  var tmpl4 = '</div>\n<div>Arrive: ';
+  var tmpl5 = '</div>';
+
+  for (var i=0; i < len; i++) {
+    out.push(tmpl1);
+    out.push(this.prettyDate(first_leg_options[i][this.getStart(this.first_leg)]));
+    out.push(tmpl2);
+    out.push(this.prettyDate(first_leg_options[i][this.getEnd(this.first_leg)]));
+    out.push(tmpl3);
+    out.push(this.prettyDate(second_leg_options[i][this.getStart(this.second_leg)]));
+    out.push(tmpl4);
+    out.push(this.prettyDate(second_leg_options[i][this.getEnd(this.second_leg)]));
+    out.push(tmpl5);
+  }
+
+  display_div.innerHTML = out.join('');
 };
 
+/**
+ * @param {Date} date The date to prettify.
+ * @return {string} A string representing the provided date.
+ */
+app.prototype.prettyDate = function(date) {
+  return date.getHours() + ':' + date.getMinutes();
+};
 
 /**
  * @param {string} leg The leg of the commmute.
@@ -109,16 +138,17 @@ app.prototype.getNextEarliestPosition = function(after, leg) {
   var item = {};
   item[start] = this.getNow()
   item[start].setDate(this.now.getDate() - 1);
-  var pointer = this.leg_pointers[leg];
 
   while (item[start] < after) {
-    item = list[pointer];
+    item = list[this.leg_pointers[leg]];
     if (! item) break;
+
+    this.leg_pointers[leg]++;
 
     item[start] = this.dateifyString(item[start]);
   }
 
-  item[end] = this.dateifyString(item[end]);
+  if (item) item[end] = this.dateifyString(item[end]);
   return item;
 };
 
