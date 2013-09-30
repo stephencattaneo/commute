@@ -1,12 +1,33 @@
 <html>
 <head>
+  <script src='helper_funcs.js'></script>
   <script src='app.js'></script>
 </head>
 <body>
-  <div id="display"></div>
+  <div id='chooser'>
+    <select id='option_select' onchange='show_hide_selector()'>
+      <option selected='true'>now</option>
+      <option>choose time</option>
+    </select>
+  </div>
+  <div id='display'></div>
   <script>
+    enumerate_time();
+
+    var display = document.querySelector('#display'); 
     var a = new app();
-    a.run(document.querySelector('#display'));
+    a.run(display, undef, true);
+
+    document.querySelector('#time_select').onchange = function () {
+      var el = document.querySelector('#time_select').selectedOptions[0];
+      var d = new Date();
+      var t = el.innerHTML.split(':');
+      d.setHours(t[0]);
+      d.setMinutes(t[1]);
+
+      if (isNaN(d.getTime())) return;
+      a.run(display, d, true);
+    };
   </script>
 </body>
 </html>
