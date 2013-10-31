@@ -52,12 +52,16 @@ app.prototype.run = function (display_div, opt_now, opt_debug) {
     var end = this.getEnd('first_leg');
     if (this.debug) window.console.log('first leg end is:' + end);
     option = this.getNextEarliestPosition(option[end], this.second_leg);
-    if (this.debug) window.console.log('first leg option:');
-    f (this.debug) window.console.log(option);
+    if (this.debug) window.console.log('second leg option:');
+    if (this.debug) window.console.log(option);
     second_leg_options.push(option);
+    // we need to reset the
+    // leg pointer by one so next time we consider
+    // the same leg.
+    this.leg_pointers[this.second_leg] -= 1;
   }
 
-  this.display(first_leg_options, second_leg_options, display_div);  
+  this.old_display(first_leg_options, second_leg_options, display_div);  
 };
 
 
@@ -68,6 +72,17 @@ app.prototype.run = function (display_div, opt_now, opt_debug) {
  * @param {Node} display_div The div to render into.
  */
 app.prototype.display = function(first_leg_options, second_leg_options, display_div) {
+  // XXX rewrite display w/ handlebars...
+  display_div.innerHTML = Handlebars.templates['commmute.tmpl'];
+};
+
+/**
+ * @param {Array.<Ojbect>} first_leg_options The next couple options for the 
+ *  first leg of the commute
+ * @param {Array.<Object>} second_leg_options Based on the first leg options
+ * @param {Node} display_div The div to render into.
+ */
+app.prototype.old_display = function(first_leg_options, second_leg_options, display_div) {
   var len = first_leg_options.length;
   var out = [];
 
@@ -91,8 +106,9 @@ app.prototype.display = function(first_leg_options, second_leg_options, display_
     }
   }
 
-  display_div.innerHTML = out.join('');
+  display_div.innerHTML = len ? out.join('') : 'No trips available.'
 };
+
 
 /**
  * @param {Date} date The date to prettify.

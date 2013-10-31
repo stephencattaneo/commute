@@ -1,5 +1,7 @@
 <html>
 <head>
+  <script src="handlebars.runtime.js"></script>
+  <script src='commmute.tmpl.js'></script>
   <script src='helper_funcs.js'></script>
   <script src='app.js'></script>
 </head>
@@ -16,7 +18,7 @@
 
     var display = document.querySelector('#display'); 
     var a = new app();
-    a.run(display, undef, true);
+    a.run(display, undefined, true);
 
     document.querySelector('#time_select').onchange = function () {
       var el = document.querySelector('#time_select').selectedOptions[0];
