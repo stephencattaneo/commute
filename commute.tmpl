@@ -1,0 +1,32 @@
+  var len = first_leg_options.length;
+  var out = [];
+
+  var tmpl1 = '<div>Bart</div>\n<div>Leave: ';
+  var tmpl2 = '</div>\n<div>Arrive: ';
+  var tmpl3 = '</div>\n<div>VTA</div>\n<div>Leave: ';
+  var tmpl4 = '</div>\n<div>Arrive: ';
+  var tmpl5 = '</div>';
+
+  for (var i=0; i < len; i++) {
+    out.push(tmpl1);
+    out.push(this.prettyDate(first_leg_options[i][this.getStart(this.first_leg)]));
+    out.push(tmpl2);
+    out.push(this.prettyDate(first_leg_options[i][this.getEnd(this.first_leg)]));
+    if (second_leg_options[i]) {
+    out.push(tmpl3);
+      out.push(this.prettyDate(second_leg_options[i][this.getStart(this.second_leg)]));
+      out.push(tmpl4);
+      out.push(this.prettyDate(second_leg_options[i][this.getEnd(this.second_leg)]));
+      out.push(tmpl5);
+    }
+  }
+
+  --------------------
+{{#each first_leg_options}}
+<div>Bart</div>
+<div>Leave: </div>
+<div>Arrive: </div>
+<div>VTA</div>
+<div>Leave: </div>
+<div>Arrive: </div>
+{{/each}}
