@@ -64,7 +64,6 @@ app.prototype.run = function (display_div, opt_now, opt_debug) {
   this.old_display(first_leg_options, second_leg_options, display_div);  
 };
 
-
 /**
  * @param {Array.<Ojbect>} first_leg_options The next couple options for the 
  *  first leg of the commute
@@ -72,17 +71,6 @@ app.prototype.run = function (display_div, opt_now, opt_debug) {
  * @param {Node} display_div The div to render into.
  */
 app.prototype.display = function(first_leg_options, second_leg_options, display_div) {
-  var tmpl = Handlebars.templates['commute.tmpl'];
-  display_div.innerHTML = tmpl({'first_leg': first_leg_options, 'second_leg': second_leg_options});
-};
-
-/**
- * @param {Array.<Ojbect>} first_leg_options The next couple options for the 
- *  first leg of the commute
- * @param {Array.<Object>} second_leg_options Based on the first leg options
- * @param {Node} display_div The div to render into.
- */
-app.prototype.old_display = function(first_leg_options, second_leg_options, display_div) {
   var len = first_leg_options.length;
   var out = [];
 
