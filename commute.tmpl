@@ -1,4 +1,4 @@
-  var len = first_leg_options.length;
+ {{!-- var len = first_leg_options.length;
   var out = [];
 
   var tmpl1 = '<div>Bart</div>\n<div>Leave: ';
@@ -20,13 +20,14 @@
       out.push(tmpl5);
     }
   }
-
-  --------------------
-{{#each first_leg_options}}
-<div>Bart</div>
-<div>Leave: </div>
-<div>Arrive: </div>
-<div>VTA</div>
-<div>Leave: </div>
-<div>Arrive: </div>
+--}}
+{{#each first_leg}}
+<div class='leg'>
+  <div>Bart</div>
+  <div>Leave:   </div>
+  <div>Arrive: </div>
+  <div>VTA</div>
+  <div>Leave: </div>
+  <div>Arrive: </div>
+</div>
 {{/each}}

@@ -72,8 +72,8 @@ app.prototype.run = function (display_div, opt_now, opt_debug) {
  * @param {Node} display_div The div to render into.
  */
 app.prototype.display = function(first_leg_options, second_leg_options, display_div) {
-  // XXX rewrite display w/ handlebars...
-  display_div.innerHTML = Handlebars.templates['commmute.tmpl'];
+  var tmpl = Handlebars.templates['commute.tmpl'];
+  display_div.innerHTML = tmpl({'first_leg': first_leg_options, 'second_leg': second_leg_options});
 };
 
 /**
