@@ -23,8 +23,9 @@ app.prototype.run = function (display_div, opt_now, opt_debug) {
   };
 
   var noon = (new Date()).setHours(12);
+  this.before_noon = this.now < noon;
   var direction, first_leg, second_leg;
-  if (this.now < noon) {
+  if (this.before_noon) {
     if (this.debug) window.console.log('now is before noon');
     this.direction = 'south_bound';
     this.first_leg = 'bart';
@@ -61,7 +62,7 @@ app.prototype.run = function (display_div, opt_now, opt_debug) {
     this.leg_pointers[this.second_leg] -= 1;
   }
 
-  this.old_display(first_leg_options, second_leg_options, display_div);  
+  this.display(first_leg_options, second_leg_options, display_div);  
 };
 
 /**
@@ -74,11 +75,13 @@ app.prototype.display = function(first_leg_options, second_leg_options, display_
   var len = first_leg_options.length;
   var out = [];
 
-  var tmpl1 = '<div>Bart</div>\n<div>Leave: ';
-  var tmpl2 = '</div>\n<div>Arrive: ';
-  var tmpl3 = '</div>\n<div>VTA</div>\n<div>Leave: ';
-  var tmpl4 = '</div>\n<div>Arrive: ';
-  var tmpl5 = '</div>';
+  var first_leg_label = this.before_noon ? 'Bart' : 'VTA';
+  var second_leg_label = !this.before_noon ? 'Bart' : 'VTA';
+  var tmpl1 = '<div class="trip"><div class="leg"><div class="title">'+ first_leg_label +'</div>\n<div class="time">Leave: ';
+  var tmpl2 = '</div>\n<div class="time">Arrive: ';
+  var tmpl3 = '</div>\n</div><div class="leg"><div class="title">'+ second_leg_label +'</div>\n<div class="time">Leave: ';
+  var tmpl4 = '</div>\n<div class="time">Arrive: ';
+  var tmpl5 = '</div></div></div>';
 
   for (var i=0; i < len; i++) {
     out.push(tmpl1);
@@ -103,7 +106,9 @@ app.prototype.display = function(first_leg_options, second_leg_options, display_
  * @return {string} A string representing the provided date.
  */
 app.prototype.prettyDate = function(date) {
-  return date.getHours() + ':' + date.getMinutes();
+  var minutes = date.getMinutes().toString();
+  if (minutes.length < 2) minutes = "0" + minutes;
+  return date.getHours() + ':' + minutes;
 };
 
 /**
