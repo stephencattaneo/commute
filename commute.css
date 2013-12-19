@@ -1,0 +1,21 @@
+body {
+  font-family: monospace;
+}
+
+.trip {
+  width: 100%;
+  border: thin solid #eee;
+  margin-bottom: 5px;  
+}
+
+.leg {
+  padding-left: 5px;
+}
+
+.title {
+  font-weight: bold;
+}
+
+.time {
+  padding-left: 7px;
+}
