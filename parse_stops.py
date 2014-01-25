@@ -5,7 +5,7 @@ import json
 from datetime import time
 
 input_file = 'bart_stop_times.txt'
-output_file = 'out.json'
+output_file = 'bart_stop_times.js'
 data = dd(dict)
 
 class TimeFriendlyEncoder(json.JSONEncoder):
@@ -27,7 +27,6 @@ def run():
     if stop_id  == 'FTVL' or stop_id == 'FRMT':
       try:
         t = [int(x) for x in arrival_time.split(':')]
-        if t[0] > 12: continue
         
         data[trip_id][stop_id] = time(*t)
       except ValueError, e:
@@ -49,6 +48,7 @@ def run():
   south_bound.sort(cmp=lambda x, y: -1 if x['FTVL'] < y['FTVL'] else 1)
 
   fd = open(output_file, 'w')
+  fd.write('bart_stop_times=')
   json.dump({'north_bound': north_bound, 'south_bound': south_bound}, fd, cls=TimeFriendlyEncoder)
   fd.close()
 
