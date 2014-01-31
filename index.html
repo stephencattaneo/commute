@@ -19,7 +19,7 @@
 
     var display = document.querySelector('#display'); 
     var a = new app();
-    a.run(display, undefined, true);
+    a.run(display);
 
     document.querySelector('#time_select').onchange = function () {
       var el = document.querySelector('#time_select').selectedOptions[0];
@@ -29,7 +29,7 @@
       d.setMinutes(t[1]);
 
       if (isNaN(d.getTime())) return;
-      a.run(display, d, true);
+      a.run(display, d);
     };
   </script>
 </body>

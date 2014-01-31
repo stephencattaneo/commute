@@ -12,9 +12,8 @@ app.prototype.second_leg = '';
 app.prototype.now = null;
 app.prototype.leg_pointers = {};
 
-app.prototype.run = function (display_div, opt_now, opt_debug) {
+app.prototype.run = function (display_div, opt_now) {
   this.now = opt_now ? opt_now : new Date();
-  this.debug = opt_debug ? true : false;
   display_div.innerHTML = '';
   if (this.debug) window.console.log('now: ' + this.now);
 
@@ -26,12 +25,10 @@ app.prototype.run = function (display_div, opt_now, opt_debug) {
   this.before_noon = this.now < noon;
   var direction, first_leg, second_leg;
   if (this.before_noon) {
-    if (this.debug) window.console.log('now is before noon');
     this.direction = 'south_bound';
     this.first_leg = 'bart';
     this.second_leg = 'vta';
   } else {
-    if (this.debug) window.console.log('now is after noon');
     this.direction = 'north_bound';
     this.first_leg = 'vta';
     this.second_leg = 'bart';
@@ -42,20 +39,14 @@ app.prototype.run = function (display_div, opt_now, opt_debug) {
   var second_leg_options = [];
   for (var i=0; i < 2; i++) {
     var option = this.getNextEarliestPosition(this.now, this.first_leg);
-    if (! option) {
-      if (this.debug) window.console.log('no option returned for first leg.')
-      break;
-    }
-    if (this.debug) window.console.log('first leg option was:');
-    if (this.debug) window.console.log(option);
+    if (! option) break;
     first_leg_options.push(option);
 
     var end = this.getEnd('first_leg');
-    if (this.debug) window.console.log('first leg end is:' + end);
+
     option = this.getNextEarliestPosition(option[end], this.second_leg);
-    if (this.debug) window.console.log('second leg option:');
-    if (this.debug) window.console.log(option);
-    second_leg_options.push(option);
+
+    if(option) second_leg_options.push(option);
     // we need to reset the
     // leg pointer by one so next time we consider
     // the same leg.
@@ -72,34 +63,37 @@ app.prototype.run = function (display_div, opt_now, opt_debug) {
  * @param {Node} display_div The div to render into.
  */
 app.prototype.display = function(first_leg_options, second_leg_options, display_div) {
-  var len = first_leg_options.length;
   var out = [];
+  var len =first_leg_options.length;
 
-  var first_leg_label = this.before_noon ? 'Bart' : 'VTA';
-  var second_leg_label = !this.before_noon ? 'Bart' : 'VTA';
-  var tmpl1 = '<div class="trip"><div class="leg"><div class="title">'+ first_leg_label +'</div>\n<div class="time">Leave: ';
-  var tmpl2 = '</div>\n<div class="time">Arrive: ';
-  var tmpl3 = '</div>\n</div><div class="leg"><div class="title">'+ second_leg_label +'</div>\n<div class="time">Leave: ';
-  var tmpl4 = '</div>\n<div class="time">Arrive: ';
-  var tmpl5 = '</div></div></div>';
+  if (len && second_leg_options.length) {
+    var first_leg_label = this.before_noon ? 'Bart' : 'VTA';
+    var second_leg_label = !this.before_noon ? 'Bart' : 'VTA';
+    var tmpl1 = '<div class="trip"><div class="leg"><div class="title">'+ first_leg_label +'</div>\n<div class="time">Leave: ';
+    var tmpl2 = '</div>\n<div class="time">Arrive: ';
+    var tmpl3 = '</div>\n</div><div class="leg"><div class="title">'+ second_leg_label +'</div>\n<div class="time">Leave: ';
+    var tmpl4 = '</div>\n<div class="time">Arrive: ';
+    var tmpl5 = '</div></div></div>';
 
-  for (var i=0; i < len; i++) {
-    out.push(tmpl1);
-    out.push(this.prettyDate(first_leg_options[i][this.getStart(this.first_leg)]));
-    out.push(tmpl2);
-    out.push(this.prettyDate(first_leg_options[i][this.getEnd(this.first_leg)]));
-    if (second_leg_options[i]) {
-    out.push(tmpl3);
-      out.push(this.prettyDate(second_leg_options[i][this.getStart(this.second_leg)]));
-      out.push(tmpl4);
-      out.push(this.prettyDate(second_leg_options[i][this.getEnd(this.second_leg)]));
-      out.push(tmpl5);
+    for (var i=0; i < len; i++) {
+      out.push(tmpl1);
+      out.push(this.prettyDate(first_leg_options[i][this.getStart(this.first_leg)]));
+      out.push(tmpl2);
+      out.push(this.prettyDate(first_leg_options[i][this.getEnd(this.first_leg)]));
+      if (second_leg_options[i]) {
+        out.push(tmpl3);
+        out.push(this.prettyDate(second_leg_options[i][this.getStart(this.second_leg)]));
+        out.push(tmpl4);
+        out.push(this.prettyDate(second_leg_options[i][this.getEnd(this.second_leg)]));
+        out.push(tmpl5);
+      }
     }
+  } else {
+    out.push('No trips available.');
   }
 
-  display_div.innerHTML = len ? out.join('') : 'No trips available.'
+  display_div.innerHTML = out.join(''); 
 };
-
 
 /**
  * @param {Date} date The date to prettify.
@@ -176,7 +170,10 @@ app.prototype.getNextEarliestPosition = function(after, leg) {
 
   while (item[start] < after) {
     var tmp_item = list[this.leg_pointers[leg]];
-    if (! tmp_item) break;
+    if (! tmp_item) {
+      item = undefined;
+      break;
+    }
 
     item = {};
     for (var key in tmp_item) {
